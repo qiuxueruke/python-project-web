@@ -23,9 +23,12 @@ export function http<T>(options: CustomRequestOptions) {
       success: async (res) => {
         const responseData = res.data as Partial<IResponse<T>>
         const code = responseData?.code
+        const requestUrl = options.url || ''
+        const isAuthCredentialRequest = /\/auth\/(login|register)(\?|$)/.test(requestUrl)
 
-        // 检查是否是401错误（包括HTTP状态码401或业务码401）
-        const isTokenExpired = res.statusCode === 401 || code === ResultEnum.Unauthorized
+        // 登录/注册失败不要当成 token 过期
+        const isTokenExpired = !isAuthCredentialRequest
+          && (res.statusCode === 401 || code === ResultEnum.Unauthorized)
 
         if (isTokenExpired) {
           const tokenStore = useTokenStore()
@@ -218,6 +221,20 @@ export function httpPut<T>(url: string, data?: Record<string, any>, query?: Reco
 }
 
 /**
+ * PATCH 请求
+ */
+export function httpPatch<T>(url: string, data?: Record<string, any>, query?: Record<string, any>, header?: Record<string, any>, options?: Partial<CustomRequestOptions>) {
+  return http<T>({
+    url,
+    data,
+    query,
+    method: 'PATCH',
+    header,
+    ...options,
+  })
+}
+
+/**
  * DELETE 请求（无请求体，仅 query）
  */
 export function httpDelete<T>(url: string, query?: Record<string, any>, header?: Record<string, any>, options?: Partial<CustomRequestOptions>) {
@@ -234,10 +251,12 @@ export function httpDelete<T>(url: string, query?: Record<string, any>, header?:
 http.get = httpGet
 http.post = httpPost
 http.put = httpPut
+http.patch = httpPatch
 http.delete = httpDelete
 
 // 支持与 alovaJS 类似的API调用
 http.Get = httpGet
 http.Post = httpPost
 http.Put = httpPut
+http.Patch = httpPatch
 http.Delete = httpDelete

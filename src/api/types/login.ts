@@ -30,6 +30,7 @@ export interface IUserInfoRes {
   username: string
   nickname: string
   avatar?: string
+  email?: string
   /** 同时支持单角色和多角色，你自行选择一种就行 */
   role?: UserRole
   roles?: UserRole[]
@@ -69,9 +70,8 @@ export interface IUploadSuccessInfo {
  * 更新用户信息
  */
 export interface IUpdateInfo {
-  id: number
-  name: string
-  sex: string
+  nickname?: string
+  email?: string
 }
 /**
  * 更新用户信息

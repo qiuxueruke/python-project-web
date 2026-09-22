@@ -1,5 +1,5 @@
-import type { IAuthLoginRes, ICaptcha, IDoubleTokenRes, IUpdateInfo, IUpdatePassword, IUserInfoRes } from './types/login'
-import { http } from '@/http/http'
+import type { IAuthLoginRes, ICaptcha, IDoubleTokenRes, ISingleTokenRes, IUpdateInfo, IUpdatePassword, IUserInfoRes } from './types/login'
+import { http, httpPatch } from '@/http/http'
 
 /**
  * 登录表单
@@ -7,6 +7,40 @@ import { http } from '@/http/http'
 export interface ILoginForm {
   username: string
   password: string
+}
+
+interface IBackendToken {
+  token?: string
+  access_token?: string
+  expiresIn?: number
+  expires_in?: number
+}
+
+interface IBackendUser {
+  id?: number
+  userId?: number
+  username: string
+  nickname?: string
+  email?: string
+  avatar?: string
+}
+
+function toSingleToken(res: IBackendToken): ISingleTokenRes {
+  return {
+    token: res.token || res.access_token || '',
+    expiresIn: res.expiresIn ?? res.expires_in ?? 24 * 60 * 60,
+  }
+}
+
+function toUserInfo(res: IBackendUser): IUserInfoRes {
+  return {
+    ...res,
+    userId: res.userId ?? res.id ?? -1,
+    username: res.username,
+    nickname: res.nickname || res.username,
+    email: res.email,
+    avatar: res.avatar,
+  }
 }
 
 /**
@@ -18,11 +52,18 @@ export function getCode() {
 }
 
 /**
+ * 用户注册
+ */
+export function register(loginForm: ILoginForm) {
+  return http.post<IUserInfoRes>('/auth/register', loginForm).then(toUserInfo)
+}
+
+/**
  * 用户登录
  * @param loginForm 登录表单
  */
 export function login(loginForm: ILoginForm) {
-  return http.post<IAuthLoginRes>('/auth/login', loginForm)
+  return http.post<IBackendToken>('/auth/login', loginForm).then(toSingleToken)
 }
 
 /**
@@ -37,21 +78,21 @@ export function refreshToken(refreshToken: string) {
  * 获取用户信息
  */
 export function getUserInfo() {
-  return http.get<IUserInfoRes>('/user/info')
+  return http.get<IBackendUser>('/users/me').then(toUserInfo)
 }
 
 /**
  * 退出登录
  */
 export function logout() {
-  return http.get<void>('/auth/logout')
+  return http.post<void>('/auth/logout')
 }
 
 /**
  * 修改用户信息
  */
 export function updateInfo(data: IUpdateInfo) {
-  return http.post('/user/updateInfo', data)
+  return httpPatch<IBackendUser>('/users/me', data).then(toUserInfo)
 }
 
 /**

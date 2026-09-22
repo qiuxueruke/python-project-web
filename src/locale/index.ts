@@ -14,9 +14,6 @@ const i18n = createI18n({
   allowComposition: true,
 })
 
-console.log(uni.getLocale())
-console.log(i18n.global.locale)
-
 /**
  * 可以拿到原始的语言模板，非 vue 文件使用这个方法，
  * @param { string } key 多语言的key，eg: "app.name"

@@ -177,6 +177,10 @@ export default defineConfig(({ command, mode }) => {
     ],
     define: {
       __VITE_APP_PROXY__: VITE_APP_PROXY_ENABLE,
+      // vue-i18n esm-bundler：用字面量替换 feature flag，便于 tree-shaking，并消除控制台警告
+      __VUE_I18N_FULL_INSTALL__: true,
+      __VUE_I18N_LEGACY_API__: true,
+      __INTLIFY_PROD_DEVTOOLS__: false,
     },
     css: {
       postcss: {

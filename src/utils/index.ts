@@ -140,28 +140,17 @@ export function getEnvBaseUrl() {
   // 请求基准地址
   let baseUrl = import.meta.env.VITE_SERVER_BASEURL
 
-  // # 有些同学可能需要在微信小程序里面根据 develop、trial、release 分别设置上传地址，参考代码如下。
-  const VITE_SERVER_BASEURL__WEIXIN_DEVELOP = 'https://ukw0y1.laf.run'
-  const VITE_SERVER_BASEURL__WEIXIN_TRIAL = 'https://ukw0y1.laf.run'
-  const VITE_SERVER_BASEURL__WEIXIN_RELEASE = 'https://ukw0y1.laf.run'
-
-  // 微信小程序端环境区分
+  // 微信小程序端按 develop / trial / release 覆写，未配置则回退 VITE_SERVER_BASEURL
   if (isMpWeixin) {
     const {
       miniProgram: { envVersion },
     } = uni.getAccountInfoSync()
-
-    switch (envVersion) {
-      case 'develop':
-        baseUrl = VITE_SERVER_BASEURL__WEIXIN_DEVELOP || baseUrl
-        break
-      case 'trial':
-        baseUrl = VITE_SERVER_BASEURL__WEIXIN_TRIAL || baseUrl
-        break
-      case 'release':
-        baseUrl = VITE_SERVER_BASEURL__WEIXIN_RELEASE || baseUrl
-        break
+    const weixinBaseUrlMap: Record<string, string | undefined> = {
+      develop: import.meta.env.VITE_SERVER_BASEURL__WEIXIN_DEVELOP,
+      trial: import.meta.env.VITE_SERVER_BASEURL__WEIXIN_TRIAL,
+      release: import.meta.env.VITE_SERVER_BASEURL__WEIXIN_RELEASE,
     }
+    baseUrl = weixinBaseUrlMap[envVersion] || baseUrl
   }
 
   return baseUrl
@@ -172,8 +161,4 @@ export function getEnvBaseUrl() {
  */
 export const isDoubleTokenMode = import.meta.env.VITE_AUTH_MODE === 'double'
 
-/**
- * 首页路径，通过 page.json 里面的 type 为 home 的页面获取，如果没有，则默认是第一个页面
- * 通常为 /pages/index/index
- */
-export const HOME_PAGE = `/${(pages as PageMetaDatum[]).find(page => page.type === 'home')?.path || (pages as PageMetaDatum[])[0].path}`
+export { HOME_PAGE } from './home-page'

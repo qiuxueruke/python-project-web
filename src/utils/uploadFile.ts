@@ -19,7 +19,7 @@
  */
 export const uploadFileUrl = {
   /** 用户头像上传地址 */
-  USER_AVATAR: `${import.meta.env.VITE_SERVER_BASEURL}/user/avatar`,
+  USER_AVATAR: '/users/me/avatar',
 }
 
 /**
@@ -283,11 +283,16 @@ function uploadFile<T>({
       success: (uploadFileRes) => {
         console.log('上传文件成功:', uploadFileRes)
         try {
-          // 解析响应数据
-          const { data: _data } = JSON.parse(uploadFileRes.data)
-          // 上传成功
-          data.value = _data as T
-          onSuccess?.(_data)
+          const parsed = JSON.parse(uploadFileRes.data)
+          const businessOk = parsed.code === 0 || parsed.code === 200
+          const httpOk = uploadFileRes.statusCode >= 200 && uploadFileRes.statusCode < 300
+          if (!httpOk || !businessOk) {
+            error.value = true
+            onError?.(new Error(parsed.message || parsed.msg || '上传失败'))
+            return
+          }
+          data.value = parsed.data as T
+          onSuccess?.(parsed.data)
         }
         catch (err) {
           // 响应解析错误

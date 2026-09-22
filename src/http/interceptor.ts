@@ -44,9 +44,11 @@ const httpInterceptor = {
     }
     // 1. 请求超时
     options.timeout = 60000 // 60s
-    // 2. （可选）添加小程序端请求头标识
     options.header = {
       ...options.header,
+    }
+    if (!options.filePath && !options.file && !options.files && !options.header['Content-Type'] && !options.header['content-type']) {
+      options.header['Content-Type'] = 'application/json'
     }
     // 3. 添加 token 请求头标识
     const tokenStore = useTokenStore()
