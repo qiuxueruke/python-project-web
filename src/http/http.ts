@@ -196,7 +196,7 @@ export function httpGet<T>(url: string, query?: Record<string, any>, header?: Re
  * @param header 请求头，默认为json格式
  * @returns
  */
-export function httpPost<T>(url: string, data?: Record<string, any>, query?: Record<string, any>, header?: Record<string, any>, options?: Partial<CustomRequestOptions>) {
+export function httpPost<T>(url: string, data?: Record<string, any> | string, query?: Record<string, any>, header?: Record<string, any>, options?: Partial<CustomRequestOptions>) {
   return http<T>({
     url,
     query,

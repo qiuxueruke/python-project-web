@@ -1,5 +1,6 @@
 import type { IAuthLoginRes, ICaptcha, IDoubleTokenRes, ISingleTokenRes, IUpdateInfo, IUpdatePassword, IUserInfoRes } from './types/login'
 import { http, httpPatch } from '@/http/http'
+import { stringifyQuery } from '@/http/tools/queryString'
 
 /**
  * 登录表单
@@ -23,6 +24,14 @@ interface IBackendUser {
   nickname?: string
   email?: string
   avatar?: string
+}
+
+const FORM_URLENCODED_HEADER = {
+  'Content-Type': 'application/x-www-form-urlencoded',
+}
+
+function toFormBody(data: Record<string, string | number | boolean>) {
+  return stringifyQuery(data)
 }
 
 function toSingleToken(res: IBackendToken): ISingleTokenRes {
@@ -52,18 +61,27 @@ export function getCode() {
 }
 
 /**
- * 用户注册
+ * 用户注册（x-www-form-urlencoded）
  */
 export function register(loginForm: ILoginForm) {
-  return http.post<IUserInfoRes>('/auth/register', loginForm).then(toUserInfo)
+  return http.post<IUserInfoRes>(
+    '/auth/register',
+    toFormBody(loginForm),
+    undefined,
+    FORM_URLENCODED_HEADER,
+  ).then(toUserInfo)
 }
 
 /**
- * 用户登录
- * @param loginForm 登录表单
+ * 用户登录（x-www-form-urlencoded）
  */
 export function login(loginForm: ILoginForm) {
-  return http.post<IBackendToken>('/auth/login', loginForm).then(toSingleToken)
+  return http.post<IBackendToken>(
+    '/auth/login',
+    toFormBody(loginForm),
+    undefined,
+    FORM_URLENCODED_HEADER,
+  ).then(toSingleToken)
 }
 
 /**
@@ -75,7 +93,7 @@ export function refreshToken(refreshToken: string) {
 }
 
 /**
- * 获取用户信息
+ * 获取用户信息（需 JWT）
  */
 export function getUserInfo() {
   return http.get<IBackendUser>('/users/me').then(toUserInfo)
@@ -89,7 +107,7 @@ export function logout() {
 }
 
 /**
- * 修改用户信息
+ * 修改用户信息（需 JWT）
  */
 export function updateInfo(data: IUpdateInfo) {
   return httpPatch<IBackendUser>('/users/me', data).then(toUserInfo)
