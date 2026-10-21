@@ -3,7 +3,9 @@ import type { INotification } from '@/api/notifications'
 import type { IUserInfoRes } from '@/api/types/login'
 import { storeToRefs } from 'pinia'
 import { createNotification, listNotifications, markNotificationRead } from '@/api/notifications'
+import { localeStamp, setAppLocale } from '@/locale'
 import { LOGIN_PAGE } from '@/router/config'
+import { setTabbarItem } from '@/tabbar/i18n'
 import { useUserStore } from '@/store'
 import { useTokenStore } from '@/store/token'
 import { uploadFileUrl, useUpload } from '@/utils/uploadFile'
@@ -122,6 +124,11 @@ async function handleRead(item: INotification) {
   }
 }
 
+function onLocaleChange(event: { detail: { value: string } }) {
+  setAppLocale(event.detail.value)
+  setTabbarItem()
+}
+
 function handleAvatarClick() {
   if (!tokenStore.hasLogin) {
     handleLogin()
@@ -177,9 +184,24 @@ function handleAvatarClick() {
           </text>
         </view>
         <view class="mt-1 text-3 text-gray-500">
-          {{ item.content }}
+          <rich-text :nodes="item.content" />
         </view>
       </view>
+    </view>
+
+    <view class="mt-4 rounded-2 bg-gray-50 p-3">
+      <view class="text-4 text-gray-800">设置</view>
+      <view class="mb-2 mt-2 text-3 text-gray-500">语言</view>
+      <radio-group @change="onLocaleChange">
+        <label class="mr-6 inline-flex items-center">
+          <radio value="zh-Hans" :checked="localeStamp === 'zh-Hans'" />
+          <text class="ml-1 text-3.5">简体中文</text>
+        </label>
+        <label class="inline-flex items-center">
+          <radio value="en" :checked="localeStamp === 'en'" />
+          <text class="ml-1 text-3.5">English</text>
+        </label>
+      </radio-group>
     </view>
 
     <view class="mt-10 px-3">

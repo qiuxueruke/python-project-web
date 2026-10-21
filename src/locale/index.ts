@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import { createI18n } from 'vue-i18n'
 
 import en from './en.json'
@@ -8,11 +9,19 @@ const messages = {
   'zh-Hans': zhHans, // key 不能乱写，查看uniapp官网
 }
 
+export const localeStamp = ref(uni.getLocale())
+
 const i18n = createI18n({
   locale: uni.getLocale(), // 获取已设置的语言，fallback 语言需要再 manifest.config.ts 中设置
   messages,
   allowComposition: true,
 })
+
+export function setAppLocale(next: string) {
+  uni.setLocale(next)
+  i18n.global.locale = next
+  localeStamp.value = next
+}
 
 /**
  * 可以拿到原始的语言模板，非 vue 文件使用这个方法，

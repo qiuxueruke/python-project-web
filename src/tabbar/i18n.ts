@@ -1,10 +1,12 @@
-import { t } from '@/locale'
+import { localeStamp, t } from '@/locale'
 import { isCurrentPageTabbar } from '@/utils'
 import { isNativeTabbar, tabbarList } from './config'
 
 // h5 中一直可以生效，小程序里面默认是无法动态切换的，这里借助vue模板自带响应式的方式
 // 直接替换 %xxx% 为 t('xxx')即可
 export function getI18nText(key: string) {
+  // 读取 localeStamp，切换语言后自定义 tabbar 会重新渲染
+  void localeStamp.value
   // 获取 %xxx% 中的 xxx
   const match = key.match(/%(.+?)%/)
   if (match) {

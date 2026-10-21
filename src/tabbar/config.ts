@@ -50,6 +50,12 @@ export const customTabbarList: CustomTabBarItem[] = [
     icon: 'i-carbon-home',
     // badge: 'dot',
   },
+  {
+    text: '%tabbar.chat%',
+    pagePath: 'pages/chat/index',
+    iconType: 'unocss',
+    icon: 'i-carbon-chat',
+  },
   // 鼓包配置示例（2025-12-31）
   // 中间鼓包tabbarItem配置：通常是扫描按钮、发布按钮、更多按钮等，点击触发业务逻辑
   // {
@@ -61,13 +67,6 @@ export const customTabbarList: CustomTabBarItem[] = [
   //   icon: '/static/tabbar/scan.png',
   //   isBulge: true,
   // },
-  {
-    pagePath: 'pages/i18n/index',
-    text: '%tabbar.i18n%',
-    iconType: 'unocss',
-    icon: 'i-carbon-ibm-watson-language-translator',
-    // badge: 10,
-  },
   {
     pagePath: 'pages/about/about',
     text: '%tabbar.about%',

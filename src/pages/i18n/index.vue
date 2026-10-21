@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import i18n, { t } from '@/locale/index'
+import { setAppLocale, t } from '@/locale/index'
 import { setTabbarItem } from '@/tabbar/i18n'
 import { testI18n } from '@/utils/i18n'
 
@@ -26,9 +26,7 @@ const languages = [
 function radioChange(evt) {
   // console.log(evt)
   current.value = evt.detail.value
-  // 下面2句缺一不可！！！
-  uni.setLocale(evt.detail.value)
-  i18n.global.locale = evt.detail.value
+  setAppLocale(evt.detail.value)
 
   // 底部tabbar需要重新设置一下
   setTabbarItem()
